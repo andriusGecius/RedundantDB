@@ -1,0 +1,17 @@
+{
+    "name": "andriusgecius/redundant-db",
+    "description": "Connection manager for high availability database clusters",
+    "type": "library",
+    "require": {
+        "ext-PDO": "^7.0",
+        "ext-memcached": "^3.0@beta"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Andrius Gecius",
+            "email": "andrius.gecius@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable"
+}
