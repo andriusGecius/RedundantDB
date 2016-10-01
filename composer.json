@@ -9,7 +9,7 @@
     },
     "autoload": {
 		"files": ["Connection.php"]
-	}
+	},
     "license": "MIT",
     "authors": [
         {
