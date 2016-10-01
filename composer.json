@@ -3,9 +3,13 @@
     "description": "Connection manager for high availability database clusters",
     "type": "library",
     "require": {
-        "ext-PDO": "^7.0",
-        "ext-memcached": "^3.0@beta"
+        "ext-PDO": "^1.0",
+        "ext-memcached": "^1.0",
+        "php": ">=5.2.0"
     },
+    "autoload": {
+		"files": ["Connection.php"]
+	}
     "license": "MIT",
     "authors": [
         {
