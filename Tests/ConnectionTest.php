@@ -4,7 +4,6 @@ use PHPUnit\Framework\TestCase;
 
 class ConnectionTest extends TestCase
 {
-
 	public function __construct()
 	{
 		//WARNING: this code has only been tested with MySQL Cluster
@@ -45,7 +44,6 @@ class ConnectionTest extends TestCase
 
 		require_once('../Connection.php');
 	}
-
 
 	public function testConnect(){
 
@@ -89,7 +87,6 @@ class ConnectionTest extends TestCase
 
 	}
 
-
 	private function displayConnectionInfo($number, $conn)
 	{
 		if(is_array($conn))
@@ -110,7 +107,6 @@ class ConnectionTest extends TestCase
 		$this->memc->delete('db_server_main');
 	}
 
-
 	public function testFirstServerDown()
 	{
 		//Deliberately setting the first server as unreachable
@@ -125,7 +121,6 @@ class ConnectionTest extends TestCase
 
 		$this->assertEquals(2, $db_selected);
 	}
-
 
 	public function testSecondServerDown()
 	{
@@ -142,17 +137,16 @@ class ConnectionTest extends TestCase
 		$this->assertEquals(1, $db_selected);
 	}
 
+	/**
+     * @expectedException Exception
+     */
 	public function testBothServersDown()
 	{
 		$this->dbConfig[1]['host'] = '111.111.111.111';
 		$this->dbConfig[2]['host'] = '111.111.111.111';
 		$RedundantDB = new \RedundantDB\Connection($this->dbConfig);
 		$connect = $RedundantDB->connect();
-
-		//Assert exception here!
-		$this->assertEquals(false, $connect);
 	}
-
 
 	private function connectionTest($connect)
 	{

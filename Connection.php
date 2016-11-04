@@ -1,5 +1,15 @@
 <?php
 
+/**
+* Redundant database connection manager
+*
+* Redundant database (for example, MySQL cluster) connection layer.
+* Finds the shortest path to the healthy database API.
+*
+* @author Andrius Gecius <andrius.gecius@gmail.com>
+*
+*/
+
 namespace RedundantDB;
 
 use \Memcached;
@@ -7,16 +17,23 @@ use \Pdo;
 
 class Connection
 {
-	//CHARSET has not been set anywhere!
-	public function __construct($config, $charset = 'UTF-8')
+	/**
+	* @param array $config
+	*/
+	public function __construct($config)
 	{
 		$this->config = $config;
-		$this->charset = $charset;
 
 		$this->memc = new \Memcached;
 		$this->memc->addServer($config['memc']['host'], $config['memc']['port']);
 	}
 
+	/**
+	* Use this method to instantiate a connection
+	*
+	* @return \PDO
+	* @throws \Execption
+	*/
 	public function connect()
 	{
 		$this->getMainServer();
@@ -33,6 +50,9 @@ class Connection
 		return $connect;
 	}
 
+	/**
+	* @return \PDO
+	*/
 	private function connectionAttempt()
 	{
 		$this->determineConnectionData();
@@ -62,6 +82,11 @@ class Connection
 		}
 	}
 
+	/**
+	* Extracts database config data from the supplied external value to internal private variables
+	*
+	* @return void
+	*/
 	private function determineConnectionData()
 	{
 		$config =  $this->config[$this->db_main];
@@ -74,6 +99,9 @@ class Connection
 		$this->password = $config['password'];
 	}
 
+	/**
+	* @return string
+	*/
 	private function determineDSN()
 	{
 		switch ($this->type) {
@@ -119,6 +147,12 @@ class Connection
 		return $dsn;
 	}
 
+	/**
+	* Record how fast the connection was established to Memcached
+	*
+	* @param int $time
+	* @return void
+	*/
 	private function recordConnectionSpeed($time)
 	{
 		$serverArr = $this->getMemc($this->db_main);
@@ -131,13 +165,21 @@ class Connection
 		$this->setMemc($this->db_main, $serverArr);
 	}
 
+	/**
+	* @param mixed $connect PDO or boolean
+	*/
 	private function verifyConnection($connect)
 	{
 		if ($connect === false) {
-			//throw new \Exception('Database connection failed. Both hosts denied the connection.');
+			throw new \Exception('Database connection failed. Both hosts denied the connection.');
 		}
 	}
 
+	/**
+	* Determine which alive server is the fastest, if there is enough data
+	*
+	* @return void
+	*/
 	private function getMainServer()
 	{
 		$this->db_main = $this->getMemc('main');
@@ -160,10 +202,15 @@ class Connection
 
 	}
 
+	/**
+	* Compare connection speeds
+	*
+	* @return void
+	*/
 	private function determineFasterOrAliveServer($db1, $db2)
 	{
 		if ( ($db1['connectTime'] < $db2['connectTime'] && $db1['connectTime'] > 0)
-			   || $db2['connectTime'] == 0) {
+			        || $db2['connectTime'] == 0) {
 
 			return 1;
 
@@ -173,6 +220,11 @@ class Connection
 		}
 	}
 
+	/**
+	* Determine the oposite server
+	*
+	* @return void
+	*/
 	private function getBackupServer()
 	{
 		if ($this->db_main == 1) {
@@ -182,21 +234,27 @@ class Connection
 		}
 	}
 
+	/**
+	* @return void
+	*/
 	public function getConnectedServer()
 	{
 		return $this->db_main;
 	}
 
+	/**
+	* @return void
+	*/
 	private function setMemc($code, $data)
 	{
 		$this->memc->set('db_server_'.$code, $data, 3600);
 	}
 
+	/**
+	* @return void
+	*/
 	private function getMemc($code)
 	{
 		return $this->memc->get('db_server_'.$code);
 	}
-
-
-
 }
