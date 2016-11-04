@@ -40,27 +40,27 @@ require 'vendor/autoload.php';
 
 // Initialize
 $dbConfig = [
- 			1 => [
- 				'host' => 'HOSTNAME',
- 				'port' => 3306,
- 				'database' => 'DBNAME',
- 				'username' => 'USERNAME',
- 				'password' => 'PASSWORD',
- 				'type' => 'mysql'
- 			],
- 			2 => [
- 				'host' => 'HOSTNAME',
- 				'port' => 3306,
- 				'database' => 'DBNAME',
- 				'username' => 'USERNAME',
- 				'password' => 'PASSWORD',
- 				'type' => 'mysql'
- 			],
- 			'memc' => [
- 				'host' => 'localhost',
- 				'port' => 11211
- 			]
- 		];
+    1 => [
+        'host' => 'HOSTNAME',
+        'port' => 3306,
+        'database' => 'DBNAME',
+        'username' => 'USERNAME',
+        'password' => 'PASSWORD',
+        'type' => 'mysql'
+    ],
+    2 => [
+        'host' => 'HOSTNAME',
+        'port' => 3306,
+        'database' => 'DBNAME',
+        'username' => 'USERNAME',
+        'password' => 'PASSWORD',
+        'type' => 'mysql'
+    ],
+    'memc' => [
+        'host' => 'localhost',
+        'port' => 11211
+    ]
+];
 
 $RedundantDB = new \RedundantDB\Connection($dbConfig);
 $connect = $RedundantDB->connect(); //Returns PDO
