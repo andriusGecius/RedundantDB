@@ -11,17 +11,17 @@ class ConnectionTest extends TestCase
 			1 => [
 				'host' => 'localhost',
 				'port' => 3306,
-				'database' => 'uptimia',
-				'username' => 'root',
-				'password' => 'asdsaduk',
+				'database' => '*********',
+				'username' => '*********',
+				'password' => '*********',
 				'type' => 'mysql'
 			],
 			2 => [
 				'host' => 'localhost',
 				'port' => 3306,
-				'database' => 'uptimia',
-				'username' => 'root',
-				'password' => 'asdsaduk',
+				'database' => '*********',
+				'username' => '*********',
+				'password' => '*********',
 				'type' => 'mysql'
 			],
 			'memc' => [
