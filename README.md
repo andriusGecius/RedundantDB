@@ -18,7 +18,7 @@ This is how RedundantDB class helps you!
 
 * **PDO** - Returns PDO object if successfully connected
 
-* **Dependancy** - Depends on \Memcached
+* **Dependencies** - Depends on \Memcached, \PDO and "romainbessugesmeusy/php-dsn-factory"
 
 ## Get Started
 
