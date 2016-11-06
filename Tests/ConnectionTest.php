@@ -2,6 +2,8 @@
 
 use PHPUnit\Framework\TestCase;
 
+include('../vendor/autoload.php');
+
 class ConnectionTest extends TestCase
 {
 	public function __construct()
@@ -11,17 +13,17 @@ class ConnectionTest extends TestCase
 			1 => [
 				'host' => 'localhost',
 				'port' => 3306,
-				'database' => '*********',
-				'username' => '*********',
-				'password' => '*********',
+				'database' => 'uptimia',
+				'username' => 'root',
+				'password' => 'asdsaduk',
 				'type' => 'mysql'
 			],
 			2 => [
 				'host' => 'localhost',
 				'port' => 3306,
-				'database' => '*********',
-				'username' => '*********',
-				'password' => '*********',
+				'database' => 'uptimia',
+				'username' => 'root',
+				'password' => 'asdsaduk',
 				'type' => 'mysql'
 			],
 			'memc' => [

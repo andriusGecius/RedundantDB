@@ -14,6 +14,7 @@ namespace RedundantDB;
 
 use \Memcached;
 use \Pdo;
+use RBM\Utils\Dsn;
 
 class Connection
 {
@@ -104,46 +105,15 @@ class Connection
 	*/
 	private function determineDSN()
 	{
-		switch ($this->type) {
-			case 'mariadb':
-				$type = 'mysql';
+		$dsn = new Dsn($this->type, [
+		    "host" => $this->host,
+		    "port" => $this->port,
+		    "dbname" => $this->database,
+		    "user" => $this->username,
+		    "password" => $this->password,
+		    "charset" => @$this->charset
+		]);
 
-			case 'mysql':
-				if (isset($this->socket)) {
-					$dsn = $this->type . ':unix_socket=' . $this->socket . ';dbname=' . $this->database;
-				} else {
-					$dsn = $this->type . ':host=' . $this->host . ($this->port ? ';port=' . $this->port : '') . ';dbname=' . $this->database;
-				}
-				break;
-
-			case 'pgsql':
-				$dsn = $this->type . ':host=' . $this->host . ($this->port ? ';port=' . $this->port : '') . ';dbname=' . $this->database;
-				break;
-
-			case 'sybase':
-				$dsn = 'dblib:host=' . $this->host . ($this->port ? ':' . $this->port : '') . ';dbname=' . $this->database;
-				break;
-
-			case 'oracle':
-				$dbname = $this->host ?
-					'//' . $this->host . ($this->port ? ':' . $this->port : ':1521') . '/' . $this->database :
-					$this->database;
-
-				$dsn = 'oci:dbname=' . $this->database . ($this->charset ? ';charset=' . $this->charset : '');
-				break;
-
-			case 'mssql':
-				$dsn = strstr(PHP_OS, 'WIN') ?
-					'sqlsrv:server=' . $this->host . ($is_port ? ',' . $this->port : '') . ';database=' . $this->database :
-					'dblib:host=' . $this->host . ($is_port ? ':' . $this->port : '') . ';dbname=' . $this->database;
-				break;
-
-			case 'sqlite':
-				$dsn = $this->type . ':' . $this->database_file;
-				$this->username = null;
-				$this->password = null;
-				break;
-		}
 		return $dsn;
 	}
 

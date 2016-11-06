@@ -5,7 +5,8 @@
     "require": {
         "ext-PDO": ">=1.0",
         "ext-memcached": ">=1.0",
-        "php": ">=5.2.0"
+        "php": ">=5.2.0",
+        "romainbessugesmeusy/php-dsn-factory": "dev-master"
     },
     "autoload": {
 		"files": ["Connection.php"]

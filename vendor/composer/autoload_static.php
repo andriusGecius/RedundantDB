@@ -10,9 +10,20 @@ class ComposerStaticInite3d31d6cefb057a4463969b8765846af
         '0578f69267b50fe111bf7b4bb5c5e905' => __DIR__ . '/../..' . '/Connection.php',
     );
 
+    public static $prefixesPsr0 = array (
+        'R' => 
+        array (
+            'RBM' => 
+            array (
+                0 => __DIR__ . '/..' . '/romainbessugesmeusy/php-dsn-factory/lib',
+            ),
+        ),
+    );
+
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
+            $loader->prefixesPsr0 = ComposerStaticInite3d31d6cefb057a4463969b8765846af::$prefixesPsr0;
 
         }, null, ClassLoader::class);
     }

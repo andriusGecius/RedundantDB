@@ -4,13 +4,46 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "f57485ad761e34047ed895447d84b74e",
-    "content-hash": "a589a35cac9991f863a9cc40fd2741cb",
-    "packages": [],
+    "hash": "59d16de2f22b187eb086c0457345a4fa",
+    "content-hash": "6f9c562b6e9ba676a19d969f04422359",
+    "packages": [
+        {
+            "name": "romainbessugesmeusy/php-dsn-factory",
+            "version": "dev-master",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/romainbessugesmeusy/php-dsn-factory.git",
+                "reference": "9c1d48ff4233f7cb2923b3abf700c8cac157e57b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/romainbessugesmeusy/php-dsn-factory/zipball/9c1d48ff4233f7cb2923b3abf700c8cac157e57b",
+                "reference": "9c1d48ff4233f7cb2923b3abf700c8cac157e57b",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "RBM": "lib/."
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "authors": [
+                {
+                    "name": "Romain Bessuges",
+                    "email": "romainbessuges@gmail.com"
+                }
+            ],
+            "description": "DSN Factory for PDO",
+            "time": "2013-03-04 13:32:57"
+        }
+    ],
     "packages-dev": [],
     "aliases": [],
     "minimum-stability": "dev",
-    "stability-flags": [],
+    "stability-flags": {
+        "romainbessugesmeusy/php-dsn-factory": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
