@@ -5,7 +5,7 @@ Connection manager for high availability database clusters
 Let`s say you have a distributed database cluster whith 2 APIs.
 Both APIs point you to exactly the same database.
 Which API do you connect to?
-What happens if one of those APIs suddenly die? 
+What happens if one of those APIs suddenly die?
 How fast can you redirect all your database connections to the healthy API?
 
 This is how RedundantDB class helps you!
@@ -18,7 +18,7 @@ This is how RedundantDB class helps you!
 
 * **PDO** - Returns PDO object if successfully connected
 
-* **Dependencies** - Depends on \Memcached, \PDO and "romainbessugesmeusy/php-dsn-factory"
+* **Dependencies** - Depends on \Memcached and \PDO
 
 ## Get Started
 
@@ -59,7 +59,8 @@ $dbConfig = [
     'memc' => [
         'host' => 'localhost',
         'port' => 11211
-    ]
+    ],
+    'charset' => 'utf8'
 ];
 
 $RedundantDB = new \RedundantDB\Connection($dbConfig);

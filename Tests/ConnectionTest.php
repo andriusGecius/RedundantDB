@@ -2,161 +2,161 @@
 
 use PHPUnit\Framework\TestCase;
 
-include('../vendor/autoload.php');
-
 class ConnectionTest extends TestCase
 {
-	public function __construct()
-	{
-		//WARNING: this code has only been tested with MySQL Cluster
-		$this->dbConfig = [
-			1 => [
-				'host' => 'localhost',
-				'port' => 3306,
-				'database' => '********',
-				'username' => '********',
-				'password' => '********',
-				'type' => 'mysql'
-			],
-			2 => [
-				'host' => 'localhost',
-				'port' => 3306,
-				'database' => '********',
-				'username' => '********',
-				'password' => '********',
-				'type' => 'mysql'
-			],
-			'memc' => [
-				'host' => 'localhost',
-				'port' => 11211
-			]
-		];
+    public function __construct()
+    {
+        parent::__construct();
 
-		if (!isset($this->dbConfig)) throw new \Exception('Please provide your database configuration before starting this test');
+        //WARNING: this code has only been tested with MySQL Cluster
+        $this->dbConfig = [
+            1 => [
+                'host' => 'localhost',
+                'port' => 3306,
+                'database' => '********',
+                'username' => '********',
+                'password' => '********',
+                'type' => 'mysql'
+            ],
+            2 => [
+                'host' => 'localhost',
+                'port' => 3306,
+                'database' => '********',
+                'username' => '********',
+                'password' => '********',
+                'type' => 'mysql'
+            ],
+            'memc' => [
+                'host' => 'localhost',
+                'port' => 11211
+            ],
+            'charset' => 'utf8'
+        ];
 
-		//Initiating Memcached
-		$this->memc = new \Memcached;
-		$this->memc->addServer($this->dbConfig['memc']['host'],$this->dbConfig['memc']['port']);
+        if (!isset($this->dbConfig)) {
+            throw new \Exception('Please provide your database configuration before starting this test');
+        }
 
-		//Testing Memc
-		$this->memc->set('test_key', 'test_val', 10);
-		$test_memc = $this->memc->get('test_key');
+        //Initiating Memcached
+        $this->memc = new \Memcached;
+        $this->memc->addServer($this->dbConfig['memc']['host'], $this->dbConfig['memc']['port']);
 
-		if($test_memc != 'test_val') throw new \Exception('Redundant Database service depends on Memcached');
+        //Testing Memc
+        $this->memc->set('test_key', 'test_val', 10);
+        $test_memc = $this->memc->get('test_key');
 
-		require_once('../Connection.php');
-	}
+        if ($test_memc != 'test_val') {
+            throw new \Exception('Redundant Database service depends on Memcached');
+        }
 
-	public function testConnect(){
+        require_once('Connection.php');
+    }
 
-		$RedundantDB = new \RedundantDB\Connection($this->dbConfig);
-
-
-		//Getting rid of previous memcached data
-		$this->destroyMemc();
-
-		$i = 0;
-		while ($i == 0) {
-			$connect = $RedundantDB->connect();
-
-			$db_server_1 = $this->getMemc('1');
-			$db_server_2 = $this->getMemc('2');
-			$db_server_main = $this->getMemc('main');
-
-			$this->displayConnectionInfo(1, $db_server_1);
-			$this->displayConnectionInfo(2, $db_server_2);
+    public function testConnect()
+    {
+        $RedundantDB = new \RedundantDB\Connection($this->dbConfig);
 
 
-			//Stop the loop
-			if(intval($db_server_main) >= 1){
-				$speedDifference = ($db_server_1['connectTime'] > $db_server_2['connectTime'])
-				? ($db_server_1['connectTime'] - $db_server_2['connectTime'])
-				: ($db_server_2['connectTime'] - $db_server_1['connectTime']);
+        //Getting rid of previous memcached data
+        $this->destroyMemc();
 
-				print PHP_EOL.PHP_EOL.'Selected fastest (or alive) connection: #'.$db_server_main.' ('.$this->dbConfig[$db_server_main]['host'].'): '.($speedDifference*1000).' ms faster';
-				$i = 1;
-			} else {
-				//Closing the connection if we continue the loop
-				$connect = null;
-			}
-		}
+        $i = 0;
+        while ($i == 0) {
+            $connect = $RedundantDB->connect();
+
+            $db_server_1 = $this->getMemc('1');
+            $db_server_2 = $this->getMemc('2');
+            $db_server_main = $this->getMemc('main');
+
+            $this->displayConnectionInfo(1, $db_server_1);
+            $this->displayConnectionInfo(2, $db_server_2);
 
 
-		$tables = $this->connectionTest($connect);
+            //Stop the loop
+            if (intval($db_server_main) >= 1) {
+                $speedDifference = ($db_server_1['connectTime'] > $db_server_2['connectTime'])
+                ? ($db_server_1['connectTime'] - $db_server_2['connectTime'])
+                : ($db_server_2['connectTime'] - $db_server_1['connectTime']);
 
-		//Found at least 1 table
-		$this->assertGreaterThanOrEqual(1, $tables);
+                print PHP_EOL.PHP_EOL.'Selected fastest (or alive) connection: #'.$db_server_main.' ('.$this->dbConfig[$db_server_main]['host'].'): '.($speedDifference*1000).' ms faster';
+                $i = 1;
+            } else {
+                //Closing the connection if we continue the loop
+                $connect = null;
+            }
+        }
 
-	}
 
-	private function displayConnectionInfo($number, $conn)
-	{
-		if(is_array($conn))
-		{
-			print PHP_EOL.'Server '.$number.' info. Number of connections: #'.$conn['count'].', average connection duration: '.$conn['connectTime'];
-		}
-	}
+        $tables = $this->connectionTest($connect);
 
-	private function getMemc($code)
-	{
-		return $this->memc->get('db_server_'.$code);
-	}
+        //Found at least 1 table
+        $this->assertGreaterThanOrEqual(1, $tables);
+    }
 
-	private function destroyMemc()
-	{
-		$this->memc->delete('db_server_1');
-		$this->memc->delete('db_server_2');
-		$this->memc->delete('db_server_main');
-	}
+    private function displayConnectionInfo($number, $conn)
+    {
+        if (is_array($conn)) {
+            print PHP_EOL.'Server '.$number.' info. Number of connections: #'.$conn['count'].', average connection duration: '.$conn['connectTime'];
+        }
+    }
 
-	public function testFirstServerDown()
-	{
-		//Deliberately setting the first server as unreachable
-		$dbConfigTemp = $this->dbConfig;
-		$dbConfigTemp[1]['host'] = '111.111.111.111';
-		$RedundantDB = new \RedundantDB\Connection($dbConfigTemp);
-		$connect = $RedundantDB->connect();
+    private function getMemc($code)
+    {
+        return $this->memc->get('db_server_'.$code);
+    }
 
-		$db_selected = $RedundantDB->getConnectedServer();
+    private function destroyMemc()
+    {
+        $this->memc->delete('db_server_1');
+        $this->memc->delete('db_server_2');
+        $this->memc->delete('db_server_main');
+    }
 
-		echo('DB selected: '.$db_selected);
+    public function testFirstServerDown()
+    {
+        //Deliberately setting the first server as unreachable
+        $dbConfigTemp = $this->dbConfig;
+        $dbConfigTemp[1]['host'] = '111.111.111.111';
+        $RedundantDB = new \RedundantDB\Connection($dbConfigTemp);
+        $connect = $RedundantDB->connect();
 
-		$this->assertEquals(2, $db_selected);
-	}
+        $db_selected = $RedundantDB->getConnectedServer();
 
-	public function testSecondServerDown()
-	{
-		//Deliberately setting the first server as unreachable
-		$dbConfigTemp = $this->dbConfig;
-		$dbConfigTemp[2]['host'] = '111.111.111.111';
-		$RedundantDB = new \RedundantDB\Connection($dbConfigTemp);
-		$connect = $RedundantDB->connect();
+        echo('DB selected: '.$db_selected);
 
-		$db_selected = $RedundantDB->getConnectedServer();
+        $this->assertEquals(2, $db_selected);
+    }
 
-		echo('DB selected: '.$db_selected);
+    public function testSecondServerDown()
+    {
+        //Deliberately setting the first server as unreachable
+        $dbConfigTemp = $this->dbConfig;
+        $dbConfigTemp[2]['host'] = '111.111.111.111';
+        $RedundantDB = new \RedundantDB\Connection($dbConfigTemp);
+        $connect = $RedundantDB->connect();
 
-		$this->assertEquals(1, $db_selected);
-	}
+        $db_selected = $RedundantDB->getConnectedServer();
 
-	/**
+        echo('DB selected: '.$db_selected);
+
+        $this->assertEquals(1, $db_selected);
+    }
+
+    /**
      * @expectedException Exception
      */
-	public function testBothServersDown()
-	{
-		$this->dbConfig[1]['host'] = '111.111.111.111';
-		$this->dbConfig[2]['host'] = '111.111.111.111';
-		$RedundantDB = new \RedundantDB\Connection($this->dbConfig);
-		$connect = $RedundantDB->connect();
-	}
+    public function testBothServersDown()
+    {
+        $this->dbConfig[1]['host'] = '111.111.111.111';
+        $this->dbConfig[2]['host'] = '111.111.111.111';
+        $RedundantDB = new \RedundantDB\Connection($this->dbConfig);
+        $connect = $RedundantDB->connect();
+    }
 
-	private function connectionTest($connect)
-	{
-		$tables = $connect->query('SHOW TABLES')->fetchAll();
+    private function connectionTest($connect)
+    {
+        $tables = $connect->query('SHOW TABLES')->fetchAll();
 
-		return $tables;
-	}
-
+        return $tables;
+    }
 }
-
-?>
