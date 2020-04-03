@@ -141,7 +141,7 @@ class Connection
     private function getMainServer()
     {
         $this->db_main = $this->getMemc('main');
-        if (intval($this->db_main) == 0) {
+        if (empty($this->db_main) === false) {
             $db1 = $this->getMemc('1');
             $db2 = $this->getMemc('2');
 
@@ -155,6 +155,7 @@ class Connection
         } else {
             //Do not calculate connection speed anymore if we have already determined the fastest connection
             $this->stopRecording = true;
+            $this->db_main = rand(1, 2);
         }
     }
 
