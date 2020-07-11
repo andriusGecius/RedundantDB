@@ -146,7 +146,7 @@ class Connection
             $db2 = $this->getMemc('2');
 
             //Determining the main server when one (or both) of them had at least 20 connections
-            if ($db1['count'] >= 20 || $db2['count'] >= 20) {
+            if ((empty($db1['count']) === false && $db1['count'] >= 20) || (empty($db2['count']) === false && $db2['count'] >= 20)) {
                 $this->db_main = $this->determineFasterOrAliveServer($db1, $db2);
                 $this->setMemc('main', $this->db_main);
             } else {
